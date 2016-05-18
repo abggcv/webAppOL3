@@ -1,0 +1,5 @@
+com\example\dao\TestWebAppDAO.class
+com\example\domain\Person.class
+com\example\controller\TestController.class
+com\example\TestwebappApplication.class
+com\example\dao\TestWebAppDAO$1.class

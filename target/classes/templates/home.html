@@ -1,0 +1,37 @@
+<!-- 
+HTML file for home page of web application
+Contains title and heading
+Specifies OpenLayer style and js files to be used
+Specifies drop-down menu for map layer selection
+ -->
+<!doctype html>
+<html lang="en">
+  <head>
+    <link rel="stylesheet" href="http://openlayers.org/en/v3.15.1/css/ol.css" type="text/css"></link>
+    
+    <link rel="stylesheet" href="css/style.css"></link>
+    
+    <script src="http://openlayers.org/en/v3.15.1/build/ol.js" type="text/javascript"></script>
+    <title>HydroGIS</title>
+  </head>
+  <body>    
+  <!-- 	<h1 data-th-text="${gridList.get(0)}">this gets replaced</h1>  -->  	
+    <h2>IDF Curves Application</h2>
+    <div title="Change Map Type">
+    <form class="form-inline">
+      <!--<p>Select Map:  -->
+      <select id="layer-type" onchange = "onChange()">      	
+        <option value="Basic">Basic Road Map</option>
+        <option value="Satellite">Satellite Image</option>
+        <option value="Satellite with labels">Satellite Image with Road Map</option>
+      </select> <!--  </p> -->
+    </form>
+    </div>
+    <div id="map" class="map"></div>
+    <script src="js/app.js"></script>
+  </body>
+</html>
+
+
+
+
