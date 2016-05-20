@@ -25,8 +25,8 @@ public class TestController {
 		
 		//List<Grid> gridList = testDAO.getGridRecords();
 		//model.addAllAttributes(gridList);
-		List<Person> personList = testDAO.getAllPersons();
-		model.addAllAttributes(personList);
+		//List<Person> personList = testDAO.getAllPersons();
+		//model.addAllAttributes(personList);
 		///model.addAttribute(personList.get(0));
 		//System.out.println(model.);
 		///return "test";
