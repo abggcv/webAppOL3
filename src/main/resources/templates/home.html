@@ -8,13 +8,10 @@ Specifies drop-down menu for map layer selection
 <html lang="en">
   <head>
   	<title>HydroGIS</title>
-    <link rel="stylesheet" href="http://openlayers.org/en/v3.15.1/css/ol.css" type="text/css"></link>
-    
-    <link rel="stylesheet" href="css/style.css"></link>
-    
+    <link rel="stylesheet" href="http://openlayers.org/en/v3.15.1/css/ol.css" type="text/css"></link>    
+    <link rel="stylesheet" href="css/style.css"></link>    
     <script src="http://openlayers.org/en/v3.15.1/build/ol.js" type="text/javascript"></script>
-    
-    
+    <script	src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>    
   </head>
   <body>    
   <!-- 	<h1 data-th-text="${gridList.get(0)}">this gets replaced</h1>  -->  	
@@ -27,14 +24,14 @@ Specifies drop-down menu for map layer selection
         <option value="Satellite with labels">Satellite Image with Road Map</option>
       </select> <!--  </p> -->
     
-    <button id="draw-point">Point</button>   <!-- onclick = "clickedPoint()" -->
-    <button id="draw-polyline">Polyline</button>
-    <button id="draw-polygon">Polygon</button>  
+    <button type="button" id="show-idf">Show IDF</button>   <!-- onclick = "clickedPoint()" -->
+<!--     <button id="draw-polyline">Polyline</button> -->
+<!--     <button id="draw-polygon">Polygon</button>   -->
     
       <select id="drawtype" title = "Draw Feature">
-        <option value="Point">Point</option>
-        <option value="LineString">Polyline</option>
-        <option value="Polygon">Polygon</option>
+        <option value="Point" title = "Click to create Point">Point</option>
+        <option value="LineString" title = "Click multiple times to create a polyline">Polyline</option>
+        <option value="Polygon" title = "Click multiple times to create a polygon">Polygon</option>
       </select>                 	
     </form>   
     <div id="map" class="map"></div>
@@ -43,6 +40,7 @@ Specifies drop-down menu for map layer selection
       <div id="popup-content"></div>
     </div> -->    
     <script src="js/app.js"></script>
+    <script src="js/showIDF.js"></script>
   </body>
 </html>
 

@@ -38,7 +38,7 @@ public class TestWebAppDAO {
 	
 	public List<Grid> getGridRecords(){
 		
-		List<Grid> gridList = jdbcTemplate.query("select * from gridsample", new RowMapper<Grid>(){
+		List<Grid> gridList = jdbcTemplate.query("select * from gridtable", new RowMapper<Grid>(){
 			
 			@Override
 			public Grid mapRow(ResultSet rs, int arg1) throws SQLException{
@@ -46,8 +46,10 @@ public class TestWebAppDAO {
 				Grid grid = new Grid();
 				grid.setId(rs.getInt("Id"));
 				grid.setCategory(rs.getString("Category"));
-				grid.setLat(rs.getDouble("Latitude"));
-				grid.setLon(rs.getDouble("Longitude"));
+				grid.setLat1(rs.getDouble("LatitudeTL"));
+				grid.setLon1(rs.getDouble("LongitudeTL"));
+				grid.setLat2(rs.getDouble("LatitudeBR"));
+				grid.setLon2(rs.getDouble("LongitudeBR"));								
 				
 				return grid;
 				
@@ -57,6 +59,34 @@ public class TestWebAppDAO {
 		});
 		
 		return gridList;
+		
+	}
+	
+	public Grid getGridRecord(String gridID){
+		
+			System.out.println("Query for row: " + gridID);
+		
+			Grid grid = (Grid) jdbcTemplate.query("select * from gridtable where Id=" + gridID, new RowMapper<Grid>(){
+			
+			@Override
+			public Grid mapRow(ResultSet rs, int arg1) throws SQLException{
+				
+				Grid grid = new Grid();
+				grid.setId(rs.getInt("Id"));
+				grid.setCategory(rs.getString("Category"));
+				grid.setLat1(rs.getDouble("LatitudeTL"));
+				grid.setLon1(rs.getDouble("LongitudeTL"));
+				grid.setLat2(rs.getDouble("LatitudeBR"));
+				grid.setLon2(rs.getDouble("LongitudeBR"));								
+				
+				return grid;
+				
+			}
+			
+			
+		});
+		
+		return grid;
 		
 	}
 	

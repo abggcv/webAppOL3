@@ -1,250 +1,104 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html> 
   <head>
-    <link rel="stylesheet" href="http://openlayers.org/en/v3.15.1/css/ol.css" type="text/css"></link>    
+    <title>Draw Features</title>
+    <link rel="stylesheet" href="http://openlayers.org/en/v3.15.1/css/ol.css" type="text/css"></link>
     <script src="http://openlayers.org/en/v3.15.1/build/ol.js" type="text/javascript"></script>
-    <title>HydroGIS</title>
   </head>
   <body>
-    <h2 style="margin-top: 1px; margin-bottom: 1px;">HydroGIS</h2>
-    <p style="margin-top: 1px; margin-bottom: 1px;">Select map type</p>    
+    <div id="map" class="map"></div>
     <form class="form-inline">
-      <select id="layer-type" onchange = "onChange()">
-        <option value="Basic Map">Basic Map</option>
-        <option value="Satellite Imagery">Satellite Imagery</option>
-        <option value="Satellite with labels">Satellite with labels</option>
+      <label>Geometry type &nbsp;</label>
+      <select id="type" title = "Draw Feature">
+        <option value="Point">Point</option>
+        <option value="LineString">LineString</option>
+        <option value="Polygon">Polygon</option>
+        <option value="Circle">Circle</option>
+        <option value="Square">Square</option>
+        <option value="Box">Box</option>
+        <option value="None">None</option>
       </select>
     </form>
-    <div id="map" class="map"></div>
-    <script type="text/javascript">
-    
-    window.app = {};
-    var app = window.app;
-    
-    //openlayers basic map
-    var layer1 = new ol.layer.Tile({
-    	visible: false, //not to be shown by default
-        preload: Infinity,
-        source: new ol.source.BingMaps({
-          key: 'AnAOw8RzJx9QB9aXy0J3QgHsCHGFCQsp_PlwAb7Dc5X1J81kEJ4rxhtBUr3I_6Ex',  //BING key
-          imagerySet: "Road"
-          // use maxZoom 19 to see stretched tiles instead of the BingMaps
-          // "no photos at this zoom level" tiles
-          // maxZoom: 19
-        })
-	});
-    
-  	//satellite image from BING Maps
-    var layer2 = new ol.layer.Tile({
-        visible: false, //not to be shown by default
-        preload: Infinity,
-        source: new ol.source.BingMaps({
-          key: 'AnAOw8RzJx9QB9aXy0J3QgHsCHGFCQsp_PlwAb7Dc5X1J81kEJ4rxhtBUr3I_6Ex',  //BING key
-          imagerySet: "Aerial"
-          // use maxZoom 19 to see stretched tiles instead of the BingMaps
-          // "no photos at this zoom level" tiles
-          // maxZoom: 19
-        })
-
-	});
-  	
-    //Satellite image from BING Maps with Labels
-    var layer3 = new ol.layer.Tile({
-        visible: false, //not to be shown by default
-        preload: Infinity,
-        source: new ol.source.BingMaps({
-          key: 'AnAOw8RzJx9QB9aXy0J3QgHsCHGFCQsp_PlwAb7Dc5X1J81kEJ4rxhtBUr3I_6Ex', //BING Key
-          imagerySet: 'AerialWithLabels'
-          // use maxZoom 19 to see stretched tiles instead of the BingMaps
-          // "no photos at this zoom level" tiles
-          // maxZoom: 19
-        })
-	});
-    
-    //list of layers of maps
-    var layersArray = [];
-    layersArray.push(layer1);
-    layersArray.push(layer2);
-    layersArray.push(layer3);    
-        
-    /* app.switchLayerControl = function(){
-    	//var selected = selection || 1;
-    	
-    	var anchor1 = document.createElement('a1');
-    	anchor1.href = '#basic-map';
-    	anchor1.innerHTML = 'B';
-    	
-    	var anchor2 = document.createElement('a2');
-    	anchor2.href = '#satellite';
-    	anchor2.innerHTML = 'S';
-    	
-    	var anchor3 = document.createElement('a3');
-    	anchor3.href = '#satellite-labels';
-    	anchor3.innerHTML = 'L';
-    	
-    	var setBasicMap = function(e) {
-    		e.preventDefault();
-    		layersArray[0].setVisible(true);
-   		 	layersArray[1].setVisible(false);
-   		 	layersArray[2].setVisible(false);
-    	};
-    	
-    	var setSatellite = function(e) {
-    		e.preventDefault();
-    		layersArray[0].setVisible(false);
-   		 	layersArray[1].setVisible(true);
-   		 	layersArray[2].setVisible(false);
-    	};
-    	
-    	
-    	var setSatelliteLabeled = function(e) {
-    		e.preventDefault();
-    		layersArray[0].setVisible(false);
-   		 	layersArray[1].setVisible(false);
-   		 	layersArray[2].setVisible(true);
-    	};
-    	
-    	anchor1.addEventListner('click', setBasicMap, false);
-    	anchor2.addEventListner('click', setSatellite, false);
-    	anchor3.addEventListner('click', setSatelliteLabeled, false);    	
-    	
-    	 var element1 = document.createElement('div');
-         element1.className = 'select-basic';
-         element1.appendChild(anchor1);
-
-         ol.control.Control.call(this, {
-           element: element1,
-           target: selection.target
-         });
-         
-         var element2 = document.createElement('div');
-         element2.className = 'select-satellite';
-         element2.appendChild(anchor2);
-
-         ol.control.Control.call(this, {
-           element: element2,
-           target: selection.target
-         });
-         
-         var element3 = document.createElement('div');
-         element3.className = 'select-satellite-labeled';
-         element3.appendChild(anchor3);
-
-         ol.control.Control.call(this, {
-           element: element3,
-           target: selection.target
-         });
-    	
-    }
-    
-    ol.inherits(app.switchLayerControl, ol.control.Control); */
-    
-    //extent parameters for zoom to full extent function
-    
-    //top left corner of screen is mapped to these coordinates when zoom to full extent is clicked
-    var extTL = ol.proj.transform([50, 26], 'EPSG:4326', 'EPSG:3857'); 
-    
-  //bottom right corner of screen is mapped to these coordinates when zoom to full extent is clicked
-    var extBR = ol.proj.transform([52, 24], 'EPSG:4326', 'EPSG:3857');
-    
-    //control for zoom to full extent
-    var zoomToExtentControl = new ol.control.ZoomToExtent({        
-        extent: [extTL[0], extTL[1], extBR[0], extBR[1]]
+    <script>
+      var raster = new ol.layer.Tile({
+        source: new ol.source.MapQuest({layer: 'sat'})
       });
-    
-    var mapView = new ol.View({  //define the initial view properties of map like what coordinate its centered at when its opened 
-  	  //for the first time and what zoom level the map will show at
-    	  center: new ol.proj.transform([51,25], 'EPSG:4326', 'EPSG:3857'),
-          zoom: 9,
-		  minZoom:5,//min. zoom allowed
-		  maxZoom:19//max. zoom allowed
-    })        
-      
-    //define map
-    var map = new ol.Map({      
-      layers: layersArray,  //map layer to be loaded as one of the layers in the list of layers defined earlier
-      /* controls: ol.control.defaults().extend([
-			new app.switchLayerControl({})                                              
-	  ]),  */
-	  controls: [ new OpenLayers.Control.OverviewMap(), 
 
-                  new OpenLayers.Control.LayerSwitcher(),
+      var source = new ol.source.Vector({wrapX: false});
 
-                  new OpenLayers.Control.PanZoomBar(),
+      var vector = new ol.layer.Vector({
+        source: source,
+        style: new ol.style.Style({
+          fill: new ol.style.Fill({
+            color: 'rgba(255, 255, 255, 0.2)'
+          }),
+          stroke: new ol.style.Stroke({
+            color: '#ffcc33',
+            width: 2
+          }),
+          image: new ol.style.Circle({
+            radius: 7,
+            fill: new ol.style.Fill({
+              color: '#ffcc33'
+            })
+          })
+        })
+      });
 
-                  new OpenLayers.Control.MouseToolbar(), 
+      var map = new ol.Map({
+        layers: [raster, vector],
+        target: 'map',
+        view: new ol.View({
+          center: [-11000000, 4600000],
+          zoom: 4
+        })
+      });
 
-                  new OpenLayers.Control.KeyboardDefaults()],
-                  
-      loadTilesWhileInteracting: true, //keep loading tiles while user browse through the map
-      target: 'map',      
-      view: mapView   
-    });
-    
-    /* var mapExtent = new ol.proj.transformExtent(map.getView().calculateExtent(map.getSize()), 'EPSG:4326', 'EPSG:3857');
-    
-    var zoomToExtentControl = new ol.control.ZoomToExtent({
-    	extent:mapExtent    	
-    }); */
-    
-    //add zoom to full extent control to the map controls
-    map.addControl(zoomToExtentControl);
-    
-    //add button for full screen map
-    map.addControl(new ol.control.FullScreen());
-    
-    
-    //keep first layer as visible when map first shows
-    layersArray[0].setVisible(true);
-    
-   
-    /* //function for zoom out 
-    document.getElementById('zoom-out').onclick = function() {
-        var view = map.getView();
-        var zoom = view.getZoom();
-        view.setZoom(zoom - 1);
+      var typeSelect = document.getElementById('type');
+
+      var draw; // global so we can remove it later
+      function addInteraction() {
+        var value = typeSelect.value;
+        if (value !== 'None') {
+          var geometryFunction, maxPoints;
+          if (value === 'Square') {
+            value = 'Circle';
+            geometryFunction = ol.interaction.Draw.createRegularPolygon(4);
+          } else if (value === 'Box') {
+            value = 'LineString'; 
+            maxPoints = 2;
+            geometryFunction = function(coordinates, geometry) {
+              if (!geometry) {
+                geometry = new ol.geom.Polygon(null);
+              }
+              var start = coordinates[0];
+              var end = coordinates[1];
+              geometry.setCoordinates([
+                [start, [start[0], end[1]], end, [end[0], start[1]], start]
+              ]);
+              return geometry;
+            };
+          }
+          draw = new ol.interaction.Draw({
+            source: source,
+            type: /** @type {ol.geom.GeometryType} */ (value),
+            geometryFunction: geometryFunction,
+            maxPoints: maxPoints
+          });
+          map.addInteraction(draw);
+        }
+      }
+
+
+      /**
+       * Handle change event.
+       */
+      typeSelect.onchange = function() {
+        map.removeInteraction(draw);
+        addInteraction();
       };
 
-    //function for zoom in
-    document.getElementById('zoom-in').onclick = function() {
-      var view = map.getView();
-      var zoom = view.getZoom();
-      view.setZoom(zoom + 1);
-    }; */
-    
-    /**
-     * Let user change the map type
-     * by changing map type option in menu
-     * only selected map type layer is visible
-     * and visible for all others is turned off
-     */
-     function onChange() {
-    	 var layerType = document.getElementById("layer-type").value;
-    	    	 
-    	 if(layerType === 'Basic Map'){
-    		 layersArray[0].setVisible(true);
-    		 layersArray[1].setVisible(false);
-    		 layersArray[2].setVisible(false);
-    	 }
-    	 
-    	 if(layerType === 'Satellite Imagery'){
-    		 layersArray[0].setVisible(false);
-    		 layersArray[1].setVisible(true);
-    		 layersArray[2].setVisible(false);
-    	 }
-    	 
-    	 if(layerType === 'Satellite with labels'){
-    		 layersArray[0].setVisible(false);
-    		 layersArray[1].setVisible(false);
-    		 layersArray[2].setVisible(true);
-    	 }
-    		 
-    	 
-    };
+      addInteraction();
     </script>
   </body>
 </html>
-
-
-
-

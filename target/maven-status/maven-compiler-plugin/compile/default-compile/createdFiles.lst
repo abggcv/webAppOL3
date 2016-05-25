@@ -1,3 +1,6 @@
+com\example\domain\Grid.class
+com\example\dao\TestWebAppDAO$3.class
+com\example\dao\TestWebAppDAO$2.class
 com\example\dao\TestWebAppDAO.class
 com\example\domain\Person.class
 com\example\controller\TestController.class

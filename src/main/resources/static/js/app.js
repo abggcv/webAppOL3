@@ -65,12 +65,11 @@ layersArray.push(layer3);
 layersArray.push(projectBoundary);
 
 //extent parameters for zoom to full extent function
-
 //top left corner of screen is mapped to these coordinates when zoom to full extent is clicked
-var extTL = ol.proj.transform([50, 25.7], 'EPSG:4326', 'EPSG:3857'); 
+var extTL = ol.proj.transform([49, 25.7], 'EPSG:4326', 'EPSG:3857');   
 
 //bottom right corner of screen is mapped to these coordinates when zoom to full extent is clicked
-var extBR = ol.proj.transform([52, 24.5], 'EPSG:4326', 'EPSG:3857');
+var extBR = ol.proj.transform([55, 24.5], 'EPSG:4326', 'EPSG:3857');
 
 //control for zoom to full extent
 var zoomToExtentControl = new ol.control.ZoomToExtent({        
@@ -78,18 +77,22 @@ var zoomToExtentControl = new ol.control.ZoomToExtent({
 });
 
 
+//extent to define map-area within which user can pan, zoom in/out
+var maxExtent = [50,24.5,52,25.7];
+
 //define map
 var map = new ol.Map({      
 	layers: layersArray,  //map layer to be loaded as one of the layers in the list of layers defined earlier
 	loadTilesWhileInteracting: true, //keep loading tiles while user browse through the map
 	//overlays: [overlay],
 	target: 'map', 	
-	view: new ol.View({  //define the initial view properties of map like what coordinate its centered at when its opened 
+	view: new ol.View({  //define the initial view properties of map like what coordinate its centred at when its opened 
 		//for the first time and what zoom level the map will show at
-		center: new ol.proj.transform([51,25.1], 'EPSG:4326', 'EPSG:3857'),
-		zoom: 9,
-		minZoom:5,//min. zoom allowed
-		maxZoom:19//max. zoom allowed
+		center: new ol.proj.transform([52,25.1], 'EPSG:4326', 'EPSG:3857'),   // --> decreasing 24~25s is upwards
+		extent: ol.proj.transformExtent(maxExtent, 'EPSG:4326', 'EPSG:3857'), // --> increasing 50~52 is lefwards
+		zoom: 8,  //9
+		minZoom:7,//min. zoom allowed  5
+		maxZoom:19//max. zoom allowed  19
 	})          
 });
 
@@ -101,14 +104,14 @@ var features = new ol.Collection();
 var featureOverlay = new ol.layer.Vector({
   source: new ol.source.Vector({features: features}),
   style: new ol.style.Style({
-    fill: new ol.style.Fill({
+    fill: new ol.style.Fill({  //for filling up the polygon
       color: 'rgba(255, 255, 255, 0.2)'
     }),
-    stroke: new ol.style.Stroke({
+    stroke: new ol.style.Stroke({  //for drawing the polyline or edges of polygon
       color: '#00ff00',
       width: 2
     }),
-    image: new ol.style.Circle({
+    image: new ol.style.Circle({  //for drawing the circle
       radius: 7,
       fill: new ol.style.Fill({
         color: '#0000ff'
@@ -119,7 +122,7 @@ var featureOverlay = new ol.layer.Vector({
 featureOverlay.setMap(map);
 
 //variable to allow/dis-allow drawing of features
-var drawFeatures = 1;
+var drawStatus;
 
 //add zoom to full extent control to the map controls
 map.addControl(zoomToExtentControl);
@@ -129,26 +132,41 @@ map.addControl(new ol.control.FullScreen());
 
 //global variables to control drawing features over map
 var draw; //interaction draw object
+
+var drawKeyPoint = new ol.interaction.Draw({    			
+					features: features,
+    				type: "Point"     
+  				   });
+
 var drawType = document.getElementById('drawtype'); //reference to feature type selected to draw
 
 //function to draw features on map
-function addInteraction() {
-	
+function addInteraction() {	
     draw = new ol.interaction.Draw({
       features: features,
       type: /** @type {ol.geom.GeometryType} */ (drawType.value)     
     });    
     
-    //disallow drawing features once user has finished drawing 
-    //--> logic is not working --> need to look into this
-    if (drawFeatures === 1){
-    	drawFeatures = 0;
-    	map.addInteraction(draw);
-    }
+    
+    
+    //event launched when user starts drawing a feature
+    //clear any overlayed features when user starts drawing a new feature
+    draw.on('drawstart', function(e){    	    
+    	featureOverlay.getSource().clear();    	    	
+    });
+   
+    draw.on('drawend', function(e){
+    	
+    	if(drawType.value === "LineString")
+    		//create a point at start and end
+        	map.addInteraction(drawKeyPoint)    	
+    	
+    });
+    
+    //add interaction to draw over map
+    map.addInteraction(draw);
     
 }
-
-
 
 
 //keep first layer as visible when map first shows
@@ -186,14 +204,14 @@ function onChange() {
 
 //function called when user changes features to be drawn
 drawType.onchange = function() {
-	if (drawFeatures === 0)
-		drawFeatures = 1;
-	
-	featureOverlay.getSource().clear();
+	//remove earlier interaction if any
 	map.removeInteraction(draw);
+	
+	//call function to change interaction type and add new interaction
 	addInteraction();	
 };
 
+//call function to change interaction type and add new interaction
 addInteraction();
 
 
@@ -203,87 +221,8 @@ addInteraction();
 
 
 
-/*function addInteractionByButtonClick(){
-
-draw = new ol.interaction.Draw({
-     //source: source,
-     features: features,
-     type: *//** @type {ol.geom.GeometryType} *//* (selectedType)
-     //maxPoints: 1
-   });
-   map.addInteraction(draw);
-
-}
-
-function clickedPoint(){
-selectedType = "Point";
-document.getElementById("point").innerHTML = "point clicked";
-map.removeInteraction(draw);
-addInteractionByButtonClick();
-}
-
-function clickedPolyline(){
-selectedType = "LineString";
-document.getElementById("point").innerHTML = "polyline clicked";
-map.removeInteraction(draw);
-addInteractionByButtonClick();
-}
-
-function clickedPolygon(){
-selectedType = "Polygon";
-document.getElementById("point").innerHTML = "polygon clicked";
-map.removeInteraction(draw);
-addInteractionByButtonClick();
-}
-
-var pointButton = document.getElementById('draw-point');
-var polylineButton = document.getElementById('draw-polyline');
-var polygonButton = document.getElementById('draw-polygon');
-
-pointButton.addEventListener('onclick', clickedPoint(), false);
-polylineButton.addEventListener('onclick', clickedPolyline(), false);
-polygonButton.addEventListener('onclick', clickedPolygon(), false);*/
-
-//addInteraction();
-
-
-//addInteractionByButtonClick();
-
-//read grid
-//var gridRecords = '${gridList}';
-
-//show coordinates on click
-/*map.on('click', function(evt) {
-	var coordinates = new ol.proj.transform(evt.coordinate, 'EPSG:3857', 'EPSG:4326');  //transform to WGS84 coordinates
-	
-	alert("Clicked on \nLat:" + coordinates[0].toFixed(2) + "\nLong:" + coordinates[1].toFixed(2)); // + 
-		  //"\ngridId: " + gridRecords); //display coordinates in alert box
-});*/
 
 
 
-/*drawtype.onchange = function() {	
-	map.removeInteraction(draw);
-	drawType = document.getElementById("draw-type").value;	
-	var maxPoints;
-	if (drawType === "Point"){
-		maxPoints = 1;
-		document.getElementById("point").innerHTML = "point clicked";
-	}
-	else
-		maxPoints = 5;
-	
-	draw = new ol.interaction.Draw({
-	      //source: source,
-	      features: features,
-	      type: *//** @type {ol.geom.GeometryType} *//* (drawType),
-	      maxPoints: maxPoints
-	    });
-   map.addInteraction(draw);*/
-	
-    //addInteraction();	
-//};	
-	
-//addInteraction();
 
 
